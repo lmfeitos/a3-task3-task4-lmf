@@ -1,0 +1,110 @@
+---
+title: "a3_task4_leonardo_feitosa"
+author: "Leonardo Feitosa"
+date: "02/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(kableExtra)
+```
+
+## Read in urchins data
+
+```{r, message = FALSE, warning = FALSE}
+urchins <- read_csv(here("data","urchins.csv")) %>% 
+  clean_names()
+```
+
+## Data wrangling
+
+```{r, message = FALSE, warning = FALSE}
+urchins_clean <- urchins %>% 
+  mutate(date_new = mdy(date)) %>% 
+  mutate(year_new = year(date_new)) %>% 
+  mutate(month_new = month(date_new))
+
+class(urchins_clean$date_new)
+
+
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin",
+         year_new == "2010",
+         month_new == "1",
+         site == "NAPL")
+```
+
+## Observe distribution patterns for both treatments
+
+First graph with exploratory analysis about data distribution
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(purple_urchins, aes(x = size)) +
+  geom_histogram() +
+  facet_wrap(~ treatment)
+```
+#QQ plot
+
+Second graph with exploratory analysis about data distribution
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(purple_urchins, aes(sample = size)) +
+  geom_qq() +
+  facet_wrap(~ treatment)
+```
+
+- Both control and annual treatments seem to follow a normal distribution. However, this is not to say that they completely follow a normal distribution, as seen especially in the second graph (Q-Q plot) with the tails on both ends being somewhat out of the general axis. 
+
+## Descriptive statistics table
+
+```{r, message = FALSE, warning = FALSE}
+urchins_table <- purple_urchins %>% 
+  group_by(treatment) %>% 
+  summarise(mean = mean(size),
+            sd = sd(size),
+            median = median(size),
+            n = n())
+
+urchins_table %>% 
+  kable(col.names = c("Treatment",
+                      "Mean",
+                      "SD",
+                      "Median",
+                      "N")) %>% 
+  kable_styling(full_width = F)
+```
+
+## Two sample t.test
+
+```{r, message = FALSE, warning = FALSE}
+control_sample <- purple_urchins %>% 
+  filter(treatment == "CONTROL") %>% 
+  pull(size)
+
+annual_sample <- purple_urchins %>% 
+  filter(treatment == "ANNUAL") %>% 
+  pull(size)
+
+t.test(x = control_sample, annual_sample)
+```
+
+
+In the t-test results above, we can see that the means for each treatment tested are quite similar (~ 3.726 for the control and ~ 3.916 for the annual treatment). Indeed, the p value of 0.2536 provides further evidence that there is a ~25% chance that this similarity is not random. Given the confidence interval, 
+
+
+
+
+
+
+
+
+
+
+
+
+

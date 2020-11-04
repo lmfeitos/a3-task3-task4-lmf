@@ -1,0 +1,145 @@
+---
+title: "a3_task3_leonardo_feitosa"
+author: "Leonardo Feitosa"
+date: "30/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(kableExtra)
+```
+
+## Read in the data
+
+Here, I'll read in the urchins data.
+
+```{r, warning = FALSE, message = FALSE}
+urchins <- read_csv(here("data","urchins.csv")) %>% 
+  clean_names()
+```
+
+### Section 1
+
+Here, I'll make the plots for exploratory data analysis.
+
+- Boxplot
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(urchins, aes(x = common_name, y = size)) +
+  geom_boxplot() +
+  labs(x = "Common name",
+       y = "Size") +
+  theme_bw()
+```
+
+
+- Histogram
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(urchins, aes(x = size)) +
+  geom_histogram()+
+  facet_wrap(~ common_name) +
+  labs(x = "Size",
+       y = "") +
+  theme_bw()
+```
+
+2 - Descriptive statistics table
+
+Here, I'll make a descriptive table for the summary statistics with mean, standard deviation (SD), and sample size (n).
+
+```{r, warning = FALSE, message = FALSE}
+urchins_table <- urchins %>% 
+  group_by(common_name) %>% 
+  summarise(mean = mean(size),
+            sd = sd(size),
+            n = n())
+
+urchins_table %>% 
+  kable(col.names = c("Common name",
+                      "Mean",
+                      "SD",
+                      "N")) %>% 
+  kable_styling(full_width = F)
+```
+
+3 - Purple urchins have a mean of 4.469 while red urchins mean size is 6.776. Despite the lowest sample size, the red urchin samples have a higher spread (SD = 1.891) than purple (SD = 1.175), which means that red urchins have a less steep distribution than the purple urchins.
+
+
+### Section 2
+
+-1 Data wrangling
+
+Here, I'll do some data wrangling to change the date variable from a character to an actual date. I'll also create a subset of the data for purple urchins and substitute acronyms for the sites for their complete names.
+
+```{r, warning = FALSE, message = FALSE}
+urchins_clean <- urchins %>% 
+  mutate(date_new = mdy(date)) %>% 
+  mutate(year_new = year(date_new))
+
+class(urchins_clean$date_new)
+
+
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin") %>% 
+  mutate(site_full = case_when(
+    site %in% c("NAPL") ~ "Naples Reef",
+    site %in% c("AQUE") ~ "Arroyo Quemado Reef",
+    site %in% c("CARP") ~ "Carpinteria Reef",
+    site %in% c("MOHK") ~ "Mohawk Reef",
+    site %in% c("IVEE") ~ "Isla Vista Reef"
+  ))  
+```
+
+2 - Count data
+
+Here, I'll make a table with count the number of observations for each year and site
+
+```{r, warning = FALSE, message = FALSE}
+purple_urchins %>% 
+  select("year_new", "site_full") %>% 
+  count(site_full, year_new)
+```
+
+3 - Exploratory graph
+
+Here, I'll make a facet exploratory plot for each site between 2008 and 2020 with the purple urchins data set.
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(purple_urchins, aes(x = year_new, fill = site_full)) +
+  geom_bar(color = "black",
+           bins = 50) +
+  facet_wrap(~ site_full) +
+  labs(x = "Year",
+       y = "Number of individuals",
+       title = "Purple urchin counts for five reefs (2008-2020)") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
