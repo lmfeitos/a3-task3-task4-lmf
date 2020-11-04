@@ -696,8 +696,7 @@ class(urchins_clean$date_new)</code></pre>
 <p>3 - Exploratory graph</p>
 <p>Here, I’ll make a facet exploratory plot for each site between 2008 and 2020 with the purple urchins data set.</p>
 <pre class="r"><code>ggplot(purple_urchins, aes(x = year_new, fill = site_full)) +
-  geom_bar(color = &quot;black&quot;,
-           bins = 50) +
+  geom_bar(color = &quot;black&quot;) +
   facet_wrap(~ site_full) +
   labs(x = &quot;Year&quot;,
        y = &quot;Number of individuals&quot;,

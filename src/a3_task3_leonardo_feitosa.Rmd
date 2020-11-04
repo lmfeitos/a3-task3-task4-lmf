@@ -112,8 +112,7 @@ Here, I'll make a facet exploratory plot for each site between 2008 and 2020 wit
 
 ```{r, warning = FALSE, message = FALSE}
 ggplot(purple_urchins, aes(x = year_new, fill = site_full)) +
-  geom_bar(color = "black",
-           bins = 50) +
+  geom_bar(color = "black") +
   facet_wrap(~ site_full) +
   labs(x = "Year",
        y = "Number of individuals",
