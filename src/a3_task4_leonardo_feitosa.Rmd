@@ -16,12 +16,20 @@ library(kableExtra)
 
 ## Read in urchins data
 
+Here, I'll read in the urchins data
+
 ```{r, message = FALSE, warning = FALSE}
 urchins <- read_csv(here("data","urchins.csv")) %>% 
   clean_names()
 ```
 
 ## Data wrangling
+
+Here, I'll work on wrangling the data
+
+- First, I'll create two new columns in the data set for year and month
+- Second, I'll check if the dates are in Date format
+- Third, I'll filter the data by common name (Purple Urchins), year (2010), month (January), and site (NAPL = Naples Reef)
 
 ```{r, message = FALSE, warning = FALSE}
 urchins_clean <- urchins %>% 
@@ -41,7 +49,7 @@ purple_urchins <- urchins_clean %>%
 
 ## Observe distribution patterns for both treatments
 
-First graph with exploratory analysis about data distribution
+First graph with exploratory analysis on data distribution
 
 ```{r, message = FALSE, warning = FALSE}
 ggplot(purple_urchins, aes(x = size)) +
@@ -58,9 +66,11 @@ ggplot(purple_urchins, aes(sample = size)) +
   facet_wrap(~ treatment)
 ```
 
-- Both control and annual treatments seem to follow a normal distribution. However, this is not to say that they completely follow a normal distribution, as seen especially in the second graph (Q-Q plot) with the tails on both ends being somewhat out of the general axis. 
+- Both control and annual treatments seem to follow a normal distribution. However, this is not to say that they completely follow a normal distribution, as seen especially in the second graph (Q-Q plot) with the tails on both ends being somewhat out of the general diagonal. 
 
 ## Descriptive statistics table
+
+Here, I'll create a table with descriptive statistics including means, starndard deviations (SD), and sample size. I'll use the kable() function from the `kableExtra` package to make a nicer looking table.
 
 ```{r, message = FALSE, warning = FALSE}
 urchins_table <- purple_urchins %>% 
@@ -81,6 +91,8 @@ urchins_table %>%
 
 ## Two sample t.test
 
+Here, I'll pull data for each factor from the treatment variable into vectors. Then, I'll use the t.test() function to calculate a two sample t-test between control and annual treatments. 
+
 ```{r, message = FALSE, warning = FALSE}
 control_sample <- purple_urchins %>% 
   filter(treatment == "CONTROL") %>% 
@@ -94,7 +106,7 @@ t.test(x = control_sample, annual_sample)
 ```
 
 
-In the t-test results above, we can see that the means for each treatment tested are quite similar (~ 3.726 for the control and ~ 3.916 for the annual treatment). Indeed, the p value of 0.2536 provides further evidence that there is a ~25% chance that this similarity is not random. Given the confidence interval, 
+In the t-test results above, we can see that the means for each treatment tested are quite similar (~ 3.726 for the control and ~ 3.916 for the annual treatment). This is also seen in the SD values, which are very similar for both treatments with an almost equal sample size for each. Indeed, this is corroborated by the p value = 0.2536, which means that there is a ~25% chance that this similarity is not random. Since this percentage is considered pretty high, I accept my null hypothesis that there are no differences between populations and, thus the data obtained likely came from the same population. 
 
 
 
